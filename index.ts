@@ -1,5 +1,7 @@
 import express from "express";
 
+
+
 const app = express();
 const PORT = 4000;
 
@@ -66,12 +68,24 @@ const quotes: Quotes[] = [
   }
 ];
 
+const cors = require('cors');
+app.use(cors());
+
 app.get("/", (req, res) => {
   res.send("Welcome to Node!!!");
 });
+app.get('/random', (req, res) =>{
+ const randomIndex = Math.floor(Math.random()*quotes.length)
+ res.send(quotes[randomIndex])
+} 
+)
 app.get("/quotes", (req, res) => {
   res.send(quotes);
 });
+
+// app.get('/quote', (res, req) => {
+//     res.send(quote)
+// })
 
 app.listen(
   PORT

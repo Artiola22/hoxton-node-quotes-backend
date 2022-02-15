@@ -1,15 +1,17 @@
+import { error } from "console";
 import express from "express";
 
 
 
 const app = express();
+app.use(express.json())
 const PORT = 4000;
 
 type Quotes = {
   id: number;
   name: string;
   birthDate: string | null ;
-  deathDate?: string | null;
+  deathDate: string | null;
   image: string;
   content: string;
 };
@@ -141,10 +143,16 @@ app.post('/quotes', (req, res) => {
 
   const name = req.body.name
   const birthDate = req.body.birthDate
+  const deathDate = req.body.deathDate
   const image = req.body.image
   const content = req.body.content
 
-  const error = []
+
+  const error: any = []
+
+  if(typeof deathDate !== 'string'){
+    error.push('Death date is missing or not a string!')
+  }
 
   if(typeof name !== 'string'){
     error.push('Name is missing or not a string!')
@@ -162,11 +170,12 @@ app.post('/quotes', (req, res) => {
 
   if(error.length === 0){
     const newQuote: Quotes ={
-    id: quotes.length +1,
+    id: Math.random(),
     content: content,
     name: name,
     image: image,
-    birthDate: birthDate
+    birthDate: birthDate,
+    deathDate: deathDate
   }
   quotes.push(newQuote)
   res.status(201).send(newQuote)
@@ -183,7 +192,4 @@ app.listen(
   PORT
   
 );
-function newQuote(newQuote: any) {
-  throw new Error("Function not implemented.");
-}
 

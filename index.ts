@@ -1,9 +1,10 @@
 import { error } from "console";
 import express from "express";
-
+import cors from 'cors'
 
 
 const app = express();
+
 app.use(express.json())
 const PORT = 4000;
 
@@ -14,8 +15,7 @@ type Quotes = {
   deathDate: string | null;
   image: string;
   content: string;
-};
-const quotes: Quotes[] = [
+};let quotes: Quotes[] = [
   {
     id: 1,
     name: "Dalai Lama",
@@ -127,6 +127,8 @@ const quotes: Quotes[] = [
 const cors = require('cors');
 app.use(cors());
 
+
+
 app.get("/", (req, res) => {
   res.send("Welcome to Node!!!");
 });
@@ -186,10 +188,42 @@ app.post('/quotes', (req, res) => {
  
 })
 
+app.patch('/quotes/:id', (req, res) => {
+  const id = Number(req.params.id)
+  const quoteToChange = quotes.find((quote)=> quote.id === id )
 
+  if(quoteToChange){
+    if(typeof req.body.name === 'string') quoteToChange.name === req.body.name
+    if(typeof req.body.image === 'string') quoteToChange.image === req.body.image
+    if(typeof req.body.content === 'string') quoteToChange.content === req.body.content
+    res.send(quoteToChange)
+  }else{
+    res.status(404).send({ error: 'Quote not found!'})
+  }
+})
+
+
+app.delete('/dogs/:id', (req, res) => {
+  //get id
+  const id = Number(req.params.id)
+//find quote
+  const match = quotes.find((quote) => quote.id === id )
+  // delete quote if it exist
+
+  if(match){
+    quotes = quotes.filter((quote) => quote.id !== id)
+    res.send({message: 'Quote deleted successfully.'})
+  }else{
+    res.status(404).send({ error: 'Quote not found!'})
+  }
+})
 
 app.listen(
   PORT
   
 );
+
+function cord(): any {
+  throw new Error("Function not implemented.");
+}
 

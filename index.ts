@@ -1,13 +1,31 @@
-import { error } from "console";
+import Database  from "better-sqlite3";
 import express from "express";
 import cors from 'cors'
 
 
 const app = express();
-
 app.use(express.json())
 const PORT = 4000;
 
+const db = new Database('./data.db', {
+  verbose: console.log
+})
+
+
+const createQuotes = db.prepare (`CREATE TABLE IF NOT EXISTS Quotes (
+  id INTEGER,
+  name TEXT,
+  birthDate TEXT,
+  deathDate TEXT,
+  image TEXT,
+  content TEXT,
+  PRIMARY KEY (id)
+);`)
+createQuotes.run()
+
+const createQuote = db.prepare(`INSERT INTO Quotes (name, birthDate, deathDate, image, content)VALUES (?, ?, ?, ?, ?); `)
+const getAllQuotes = db.prepare(`SELECT * FROM quotes`)
+const getSingleQuote = db.prepare(`SELECT * FROM quotes WHERE id=?;`)
 type Quotes = {
   id: number;
   name: string;
@@ -129,9 +147,16 @@ app.use(cors());
 
 
 
-app.get("/", (req, res) => {
-  res.send("Welcome to Node!!!");
+app.get("/quote", (req, res) => {
+  const quote = createQuote.get();
+  res.send(quote);
 });
+ 
+app.get('/quotes/:id' , (req, res) =>{
+  const id = Number(req.params.id)
+ const getQuote = getSingleQuote.get(id);
+ res.send(getQuote);
+})
 app.get('/random', (req, res) =>{
  const randomIndex = Math.floor(Math.random()*quotes.length)
  res.send(quotes[randomIndex])
@@ -150,27 +175,27 @@ app.post('/quotes', (req, res) => {
   const content = req.body.content
 
 
-  const error: any = []
+  const errors: any = []
 
   if(typeof deathDate !== 'string'){
-    error.push('Death date is missing or not a string!')
+    errors.push('Death date is missing')
   }
 
   if(typeof name !== 'string'){
-    error.push('Name is missing or not a string!')
+    errors.push('Name is missing')
   }
   if(typeof birthDate !== 'string'){
-    error.push('Birth date is missing or not a string!')
+    errors.push('Birth date is missing')
   }
   if(typeof image !== 'string'){
-    error.push('Image is missing or not a string!')
+    errors.push('Image is missing')
   }
   if(typeof content !== 'string'){
-    error.push('Content is missing or not a string!')
+    errors.push('Content is missing')
   }
 
 
-  if(error.length === 0){
+  if(errors.length === 0){
     const newQuote: Quotes ={
     id: Math.random(),
     content: content,
@@ -182,7 +207,7 @@ app.post('/quotes', (req, res) => {
   quotes.push(newQuote)
   res.status(201).send(newQuote)
   } else{
-    res.status(400).send({error: error})
+    res.status(400).send({error: errors})
   }
   
  

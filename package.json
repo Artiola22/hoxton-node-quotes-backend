@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "@types/better-sqlite3": "^7.4.2",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.17",
+    "better-sqlite3": "^7.5.0",
     "cors": "^2.8.5",
     "express": "^4.17.2",
     "nodemon": "^2.0.15",
@@ -16,6 +18,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {},
   "description": ""
 }
